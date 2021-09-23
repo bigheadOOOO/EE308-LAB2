@@ -117,7 +117,6 @@ def getResult(level):
 
         counter_for_arrange = 0
         for i in arrange:
-
             indexs_else = [-1]
             indexs_elseif = [-1]
             indexs_if = [-1]
@@ -181,7 +180,6 @@ def getResult(level):
 
             # Find "if-elseif-else" and "if-else" structures
             for h in if_else:
-
                 # Take a pair of indexes of "if-else"
                 if indexs_elseif[0] == -1:
                     # There is no "elseif" in this layer.

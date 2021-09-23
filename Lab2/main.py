@@ -15,7 +15,6 @@ while True:
         total_txt = open(filePath, 'r').read()  # Read file as string
         break
 
-
 dic = {
     1: "auto", 2: "break", 3: "case", 4: "char", 5: "const", 6: "continue", 7: "default", 8: "double", 9: "do",
     10: "else",
@@ -68,10 +67,9 @@ def getResult():
         num_of_str1 = len(index_of_str1)
         num_of_str2 = []
 
-        # Renew
         txt_copy = total_txt
 
-        for ele in range(0, num_of_str1):  # 0, 1, no 2
+        for ele in range(0, num_of_str1):
             # Search Str2 between two Str1 and bellow the last Str1
             if ele == num_of_str1 - 1:  # Search Str2 bellowed the last Str1
                 Txt_len = len(txt_copy[index_of_str1[ele]:-1])
@@ -103,7 +101,7 @@ def getResult():
         # Turn all "else if" to "elf"
         # Avoid the code confusing "else" and "else if", "if" and "elise if"
 
-        lit = total_txt.replace("se i", "").split('\n')
+        lit = total_txt.replace("se i", "").split("\n")
 
         tab_group = set()  # Store the situation about the number of layers
         for ele in lit:
@@ -112,7 +110,6 @@ def getResult():
             tab = (len(ele) - len(j)) / 4
             if tab != 0 and tab not in tab_group:
                 tab_group.add(tab)
-
 
         arrange = []  # This list arranges different layers in different sublist.
         layer = len(tab_group)  # Layers counter
@@ -215,8 +212,4 @@ def getResult():
             print("\nif-elseif-else num :", counter_for_elseif)
 
 
-# Run
 getResult()
-
-
-
