@@ -15,12 +15,6 @@ while True:
         total_txt = open(filePath, 'r').read()  # Read file as string
         break
 
-txt_list = total_txt.split('\n')
-
-# delete all annotation
-for i in txt_list:
-    if '#' in i:
-        txt_list[txt_list.index(i)] = i[:i.index('#')]
 
 dic = {
     1: "auto", 2: "break", 3: "case", 4: "char", 5: "const", 6: "continue", 7: "default", 8: "double", 9: "do",
@@ -36,66 +30,68 @@ dic = {
 def getResult():
     level = int(input("The completion level(1-4) is "))
     if level == 1:
-        txtCopy = total_txt
+        txt_copy = total_txt
         keywords = 0
         for index in range(1, 33):
-            txtLen = len(txtCopy)
-            if txtCopy.find(dic[index]) != -1:
+            txt_len = len(txt_copy)
+            if txt_copy.find(dic[index]) != -1:
                 # The keyword is in the file.
-                keywordLen = len(dic[index])
-                txtCopy = txtCopy.replace(dic[index], "")  # Delete one type of keyword.
-                newTxtLen = len(txtCopy)
-                keywords += (txtLen - newTxtLen) / keywordLen
+                keyword_len = len(dic[index])
+                txt_copy = txt_copy.replace(dic[index], "")  # Delete one type of keyword.
+                new_txt_len = len(txt_copy)
+                keywords += (txt_len - new_txt_len) / keyword_len
                 # Calculate how many this keyword in file
         print("\ntotal num: ", int(keywords))
-        return int(keywords)
+
+
+
 
     elif level == 2:
-        txtCopy = total_txt
+        txt_copy = total_txt
         str1 = "switch"
         str2 = "case"
-        indexOfStr1 = []
+        index_of_str1 = []
 
-        start = txtCopy.find(str1)  # Get the first index of Str1
-        indexOfStr1.append(start)
+        start = txt_copy.find(str1)  # Get the first index of Str1
+        index_of_str1.append(start)
         while start != -1:
             # Next Str1 exists.
-            txtCopy = txtCopy[start + 1:]
-            start = txtCopy.find(str1)
+            txt_copy = txt_copy[start + 1:]
+            start = txt_copy.find(str1)
             if start == -1:
                 # There is no Str1 below.
                 break
             else:
                 # If Str1 can still be found bellow, add it to list.
-                indexOfStr1.append(start + indexOfStr1[-1])
+                index_of_str1.append(start + index_of_str1[-1])
 
-        numOfStr1 = len(indexOfStr1)
-        numOfStr2 = set()
+        num_of_str1 = len(index_of_str1)
+        num_of_str2 = []
 
         # Renew
-        txtCopy = total_txt
+        txt_copy = total_txt
 
-        for ele in range(0, numOfStr1):  # 0, 1, no 2
+        for ele in range(0, num_of_str1):  # 0, 1, no 2
             # Search Str2 between two Str1 and bellow the last Str1
-            if ele == numOfStr1 - 1:  # Search Str2 bellowed the last Str1
-                TxtLen = len(txtCopy[indexOfStr1[ele]:-1])
+            if ele == num_of_str1 - 1:  # Search Str2 bellowed the last Str1
+                Txt_len = len(txt_copy[index_of_str1[ele]:-1])
                 # Delete all Str2 to get the number of Str2 bellowed the last Str1
-                txtCopy = txtCopy[indexOfStr1[ele]:-1].replace("case", "")
+                txt_copy = txt_copy[index_of_str1[ele]:-1].replace("case", "")
             else:  # Search Str2 between two Str1
-                TxtLen = len(txtCopy[indexOfStr1[ele]:indexOfStr1[ele + 1]])
+                Txt_len = len(txt_copy[index_of_str1[ele]:index_of_str1[ele + 1]])
                 # Delete all Str2 to get the number of Str2 bellowed the last Str1
-                txtCopy = txtCopy[indexOfStr1[ele]:indexOfStr1[ele + 1]]
-                txtCopy = txtCopy.replace("case", "")
+                txt_copy = txt_copy[index_of_str1[ele]:index_of_str1[ele + 1]]
+                txt_copy = txt_copy.replace("case", "")
 
-            newTxtLen = len(txtCopy)
+            new_txt_len = len(txt_copy)
             # list the number of Str2 for different Str1
-            numOfStr2.add(int((TxtLen - newTxtLen) / len(str2)))
+            num_of_str2.append(int((Txt_len - new_txt_len) / len(str2)))
 
             # Renew
-            txtCopy = total_txt
+            txt_copy = total_txt
         # Output
-        print("switch num: ", numOfStr1, "\ncase num: " + " ".join(str(ele) for ele in numOfStr2))
-        return [2, 3, 2]
+        print("switch num: ", num_of_str1, "\ncase num: " + " ".join(str(ele) for ele in num_of_str2))
+
 
     elif (level == 3) or (level == 4):
         str1 = "if"
@@ -148,16 +144,19 @@ def getResult():
                         index += add_ele + len(str1)
                     else:
                         break
+            # No "if", no structure in a layer
+            if indexs_if[0] == -1:
+                continue
 
             # find "else" in one layer
             index = arrange[counter_for_arrange].find(str2)
             if index != -1:
                 indexs_else[0] = index  # First else's location
                 while True:
-                    addEle = arrange[counter_for_arrange][index + len(str2):].find(str2)
-                    if addEle != - 1:
-                        indexs_else.append(addEle + index + len(str2))
-                        index += addEle + len(str2)
+                    add_ele = arrange[counter_for_arrange][index + len(str2):].find(str2)
+                    if add_ele != - 1:
+                        indexs_else.append(add_ele + index + len(str2))
+                        index += add_ele + len(str2)
                     else:
                         break
             # find "elf" in one layer
@@ -166,10 +165,10 @@ def getResult():
                 indexs_elseif[0] = index  # the first elf's location
                 while True:
                     # Add all elf's index in list
-                    addEle = arrange[counter_for_arrange][index + len(str3):].find(str3)
-                    if addEle != - 1:
-                        indexs_elseif.append(addEle + index + len(str3))
-                        index += addEle + len(str3)
+                    add_ele = arrange[counter_for_arrange][index + len(str3):].find(str3)
+                    if add_ele != - 1:
+                        indexs_elseif.append(add_ele + index + len(str3))
+                        index += add_ele + len(str3)
                     else:
                         break
 
@@ -192,12 +191,13 @@ def getResult():
 
             # Find "if-elseif-else" and "if-else" structures
             for h in if_else:
-
                 # Take a pair of indexes of "if-else"
                 if indexs_elseif[0] == -1:
-                    # There is no "else" in this layer.
-                    # No "else" exists , then no any structure about "if" exists
+                    # There is no "elseif" in this layer.
+                    # All if-else pairs are in "if-else" structure
+                    counter_for_else += len(if_else)
                     break
+
                 for L in indexs_elseif:
                     if h[1] > L > h[0]:
                         # There is at least an "elf" in this pair of "if-else".
@@ -211,10 +211,12 @@ def getResult():
 
         if level == 3:
             print("\nif-else num :", counter_for_else)
-            return counter_for_else
-        else:
+        else:  # level == 4
             print("\nif-elseif-else num :", counter_for_elseif)
-            return counter_for_elseif
+
 
 # Run
 getResult()
+
+
+
